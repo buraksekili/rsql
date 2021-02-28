@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"text/tabwriter"
+
+	"github.com/olekukonko/tablewriter"
 
 	"github.com/buraksekili/rsql/data"
 
 	"github.com/buraksekili/selog"
-	"github.com/olekukonko/tablewriter"
 )
 
 type DbClient struct {
@@ -35,6 +37,19 @@ func (c *DbClient) OpenConnection() {
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
+
+	stats := c.db.Stats()
+	w := new(tabwriter.Writer)
+
+	// Format in tab-separated columns with a tab stop of 8.
+	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
+	fmt.Fprintln(w, "===== STATS =====")
+	fmt.Fprintln(w, "Max Open Connections:\t", stats.MaxOpenConnections)
+	fmt.Fprintln(w, "Open Connection:\t", stats.OpenConnections)
+	fmt.Fprintln(w, "Idle:\t", stats.Idle)
+	fmt.Fprintln(w, "In Use:\t", stats.InUse)
+	w.Flush()
+
 	fmt.Print("> ")
 	for scanner.Scan() {
 		if scanner.Err() != nil {
@@ -48,7 +63,17 @@ func (c *DbClient) OpenConnection() {
 		cmds := strings.Split(line, " ")
 		switch cmds[0] {
 		case "info":
-			c.tableInfo(cmds[1])
+			fmt.Printf("\nFETCHING INFORMATION FOR TABLE: %s\n", cmds[1])
+			fields := c.tableInfo(cmds[1])
+			tWriter := tablewriter.NewWriter(os.Stdout)
+			tWriter.SetHeader([]string{"Field", "Type", "Null", "Key", "Default", "Extra"})
+
+			for _, f := range fields {
+				tWriter.Append([]string{f.Field, f.Type, f.Null, f.Key, f.Default, f.Extra})
+			}
+			tWriter.Render()
+		case "add":
+			c.addData(cmds[1])
 		case "q":
 			return
 		case "exit":
@@ -58,66 +83,4 @@ func (c *DbClient) OpenConnection() {
 		}
 		fmt.Print("> ")
 	}
-}
-
-func (c *DbClient) tableInfo(table string) {
-	fmt.Printf("\nFETCHING INFORMATION FOR TABLE: %s\n", table)
-	if c.db == nil {
-		c.Log.Error("cannot fetch table: c.db == nil\n")
-		return
-	}
-
-	rows, err := c.db.Query(fmt.Sprintf("show columns from %s", table))
-	if err != nil {
-		c.Log.Error("cannot fetch table info: %v\n", err)
-		return
-	}
-	defer rows.Close()
-
-	cols, err := rows.Columns()
-	colVals := make([]interface{}, len(cols))
-	var fields []data.TableField
-	var field data.TableField
-
-	for rows.Next() {
-		// https://www.farrellit.net/2018/08/12/golang-sql-unknown-rows.html
-		colsAsSoc := make(map[string]interface{}, len(cols))
-
-		for i, _ := range colVals {
-			colVals[i] = new(interface{})
-		}
-		if err := rows.Scan(colVals...); err != nil {
-			c.Log.Error("cannot get columns: %v", err)
-			break
-		}
-
-		for i, col := range cols {
-			colsAsSoc[col] = *colVals[i].(*interface{})
-			switch col {
-			case "Field":
-				field.Field = fmt.Sprintf("%s", colsAsSoc[col])
-			case "Type":
-				field.Type = fmt.Sprintf("%s", colsAsSoc[col])
-			case "Null":
-				field.Null = fmt.Sprintf("%s", colsAsSoc[col])
-			case "Default":
-				if colsAsSoc[col] == nil {
-					field.Default = ""
-				} else {
-					field.Default = fmt.Sprintf("%s", colsAsSoc[col])
-				}
-			case "Extra":
-				field.Extra = fmt.Sprintf("%s", colsAsSoc[col])
-				fields = append(fields, field)
-			}
-		}
-	}
-
-	tWriter := tablewriter.NewWriter(os.Stdout)
-	tWriter.SetHeader([]string{"Field", "Type", "Null", "Key", "Default", "Extra"})
-
-	for _, f := range fields {
-		tWriter.Append([]string{f.Field, f.Type, f.Null, f.Key, f.Default, f.Extra})
-	}
-	tWriter.Render()
 }
