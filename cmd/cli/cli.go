@@ -19,6 +19,7 @@ import (
 func main() {
 
 	c := &data.ConnInfo{}
+	e := false
 	switch v := parseFlag().(type) {
 	case HelpOp:
 		printHelp(os.Stdout)
@@ -28,6 +29,7 @@ func main() {
 		if err != nil {
 			log.Fatal("cannot read env file: %v", err)
 		}
+		e = true
 		c = connInfo
 	}
 
@@ -36,7 +38,7 @@ func main() {
 
 	dbClient := client.NewDbClient(l)
 
-	if c != nil {
+	if e {
 		fmt.Println("FILE LOADED")
 	}
 

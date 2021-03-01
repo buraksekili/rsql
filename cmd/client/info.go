@@ -20,6 +20,10 @@ func (c *DbClient) tableInfo(table string) []data.TableField {
 	defer rows.Close()
 
 	cols, err := rows.Columns()
+	if err != nil {
+		c.Log.Error("cannot fetch columns: %v\n", err)
+	}
+
 	colVals := make([]interface{}, len(cols))
 	var fields []data.TableField
 	var field data.TableField
