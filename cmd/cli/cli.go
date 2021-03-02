@@ -114,5 +114,7 @@ func getConnInfo(dbClient *client.DbClient, connInfo *data.ConnInfo) {
 			fmt.Print("\n\tInvalid password\nPassword: ")
 		}
 	}
-	dbClient.OpenConnection()
+	if err := dbClient.OpenConnection(); err != nil {
+		dbClient.Log.Fatal("cannot open connection: %v", err)
+	}
 }

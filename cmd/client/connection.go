@@ -17,16 +17,16 @@ import (
 //
 // If there is no error after pinging the DB, this function takes
 // input to execute on the DB specified by the user.
-func (c *DbClient) OpenConnection() {
+func (c *DbClient) OpenConnection() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", c.ConnInfo.User, c.ConnInfo.Password, c.ConnInfo.HostAddr, c.ConnInfo.Port, c.ConnInfo.DbName))
 
 	if err != nil {
-		c.Log.Fatal("cannot open connection to db: %v", err)
+		return err
 	}
 	c.db = db
 	defer db.Close()
 	if err := db.Ping(); err != nil {
-		c.Log.Fatal("cannot establish connection: %v", err)
+		return err
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -69,12 +69,13 @@ func (c *DbClient) OpenConnection() {
 		case "display":
 			c.displayTable(cmds[1])
 		case "q":
-			return
+			return nil
 		case "exit":
-			return
+			return nil
 		default:
 			fmt.Println("INVALID SYNTAX")
 		}
 		fmt.Print("> ")
 	}
+	return nil
 }
