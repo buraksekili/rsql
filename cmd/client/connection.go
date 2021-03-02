@@ -48,23 +48,22 @@ func (c *DbClient) OpenConnection() {
 		if scanner.Err() != nil {
 			c.Log.Error("cannot scan input line: %v", scanner.Err())
 		}
-		line := strings.ToLower(strings.Trim(scanner.Text(), " "))
-		if line == "q" {
-			break
-		}
 
+		line := strings.ToLower(strings.Trim(scanner.Text(), " "))
 		cmds := strings.Split(line, " ")
 		switch cmds[0] {
 		case "info":
-			fmt.Printf("\nFETCHING INFORMATION FOR TABLE: %s\n", cmds[1])
 			fields := c.tableInfo(cmds[1])
-			tWriter := tablewriter.NewWriter(os.Stdout)
-			tWriter.SetHeader([]string{"Field", "Type", "Null", "Key", "Default", "Extra"})
+			if len(fields) != 0 {
+				fmt.Printf("\nFETCHING INFORMATION FOR TABLE: %s\n", cmds[1])
+				tWriter := tablewriter.NewWriter(os.Stdout)
+				tWriter.SetHeader([]string{"Field", "Type", "Null", "Key", "Default", "Extra"})
 
-			for _, f := range fields {
-				tWriter.Append([]string{f.Field, f.Type, f.Null, f.Key, f.Default, f.Extra})
+				for _, f := range fields {
+					tWriter.Append([]string{f.Field, f.Type, f.Null, f.Key, f.Default, f.Extra})
+				}
+				tWriter.Render()
 			}
-			tWriter.Render()
 		case "add":
 			c.addData(cmds[1])
 		case "display":

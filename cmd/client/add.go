@@ -11,7 +11,7 @@ import (
 func (c *DbClient) addData(table string) {
 	fields := c.tableInfo(table)
 	if len(fields) == 0 {
-		c.Log.Error("cannot fetch table information for table %s", table)
+		c.Log.Error("cannot fetch table information for table %s\n", table)
 		return
 	}
 
