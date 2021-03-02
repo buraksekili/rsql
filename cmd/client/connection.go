@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"text/tabwriter"
 
 	"github.com/olekukonko/tablewriter"
 )
@@ -31,19 +30,9 @@ func (c *DbClient) OpenConnection() error {
 
 	scanner := bufio.NewScanner(os.Stdin)
 
-	stats := c.db.Stats()
-	w := new(tabwriter.Writer)
-
-	// Format in tab-separated columns with a tab stop of 8.
-	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
-	fmt.Fprintln(w, "===== STATS =====")
-	fmt.Fprintln(w, "Max Open Connections:\t", stats.MaxOpenConnections)
-	fmt.Fprintln(w, "Open Connection:\t", stats.OpenConnections)
-	fmt.Fprintln(w, "Idle:\t", stats.Idle)
-	fmt.Fprintln(w, "In Use:\t", stats.InUse)
-	w.Flush()
-
+	c.displayDBStats()
 	fmt.Print("> ")
+
 	for scanner.Scan() {
 		if scanner.Err() != nil {
 			c.Log.Error("cannot scan input line: %v", scanner.Err())
@@ -68,6 +57,10 @@ func (c *DbClient) OpenConnection() error {
 			c.addData(cmds[1])
 		case "display":
 			c.displayTable(cmds[1])
+		case "tables":
+			c.showTables()
+		case "stats":
+			c.displayDBStats()
 		case "q":
 			return nil
 		case "exit":
