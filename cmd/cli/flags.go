@@ -13,8 +13,6 @@ type EnvFileOp struct {
 	Filename string
 }
 
-type EmptyOp struct{}
-
 type InvalidOp struct {
 	Error string
 }
@@ -27,7 +25,7 @@ func parseFlag() Operation {
 	flags := os.Args[1:]
 
 	if len(flags) == 0 {
-		return EmptyOp{}
+		return InvalidOp{Error: "Empty operation"}
 	}
 	if len(flags) > 2 {
 		return InvalidOp{Error: "Too many flags entered."}

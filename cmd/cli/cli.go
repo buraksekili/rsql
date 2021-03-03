@@ -31,6 +31,10 @@ func main() {
 		}
 		e = true
 		c = connInfo
+	case UnknownOp:
+		log.Fatal("Unknown operation: ", v.Error)
+	case InvalidOp:
+		log.Fatal("Invalid operation: ", v.Error)
 	}
 
 	logger := log.New(os.Stdout, "rsql ", log.LstdFlags|log.Lshortfile)
