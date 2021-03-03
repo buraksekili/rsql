@@ -18,6 +18,7 @@ rsql -f <FNAME>, --envfile <FNAME>      : reads environment file to establish My
 add <TABLE>     : adds data to <TABLE>
 info <TABLE>    : displays the column informations of the <TABLE>
 display <TABLE> : displays the data of the <TABLE>
+tables          : displays available tables under the <DB> specified by user
 q, exit         : exits the program
 ```
 
