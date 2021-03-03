@@ -39,7 +39,6 @@ func (c *DbClient) showTables() []string {
 		for _, v := range vals {
 			s := v.(*sql.RawBytes)
 			tables = append(tables, string(*s))
-			fmt.Printf("value is %v\n", string(*s))
 		}
 	}
 

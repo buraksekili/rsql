@@ -11,11 +11,11 @@ import (
 )
 
 // OpenConnection opens connection, pings the DB.
-// In case of any error while pinging, the app prints fatal
-// error and exits.
+// In case of any error while pinging, it returns error.
 //
 // If there is no error after pinging the DB, this function takes
-// input to execute on the DB specified by the user.
+// input(cmds) to execute on the DB specified by the user.
+// To see available cmds, type; > help
 func (c *DbClient) OpenConnection() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", c.ConnInfo.User, c.ConnInfo.Password, c.ConnInfo.HostAddr, c.ConnInfo.Port, c.ConnInfo.DbName))
 
@@ -40,33 +40,43 @@ func (c *DbClient) OpenConnection() error {
 
 		line := strings.ToLower(strings.Trim(scanner.Text(), " "))
 		cmds := strings.Split(line, " ")
-		switch cmds[0] {
-		case "info":
-			fields := c.tableInfo(cmds[1])
-			if len(fields) != 0 {
-				fmt.Printf("\nFETCHING INFORMATION FOR TABLE: %s\n", cmds[1])
-				tWriter := tablewriter.NewWriter(os.Stdout)
-				tWriter.SetHeader([]string{"Field", "Type", "Null", "Key", "Default", "Extra"})
 
-				for _, f := range fields {
-					tWriter.Append([]string{f.Field, f.Type, f.Null, f.Key, f.Default, f.Extra})
-				}
-				tWriter.Render()
+		if len(cmds) > 2 {
+			fmt.Printf("Invalid number of commands\n")
+		} else if len(cmds) == 1 {
+			switch cmds[0] {
+			case "tables":
+				c.showTables()
+			case "stats":
+				c.displayDBStats()
+			case "q":
+				return nil
+			case "exit":
+				return nil
+			default:
+				fmt.Println("INVALID SYNTAX")
 			}
-		case "add":
-			c.addData(cmds[1])
-		case "display":
-			c.displayTable(cmds[1])
-		case "tables":
-			c.showTables()
-		case "stats":
-			c.displayDBStats()
-		case "q":
-			return nil
-		case "exit":
-			return nil
-		default:
-			fmt.Println("INVALID SYNTAX")
+		} else {
+			switch cmds[0] {
+			case "info":
+				fields := c.tableInfo(cmds[1])
+				if len(fields) != 0 {
+					fmt.Printf("\nFETCHING INFORMATION FOR TABLE: %s\n", cmds[1])
+					tWriter := tablewriter.NewWriter(os.Stdout)
+					tWriter.SetHeader([]string{"Field", "Type", "Null", "Key", "Default", "Extra"})
+
+					for _, f := range fields {
+						tWriter.Append([]string{f.Field, f.Type, f.Null, f.Key, f.Default, f.Extra})
+					}
+					tWriter.Render()
+				}
+			case "add":
+				c.addData(cmds[1])
+			case "display":
+				c.displayTable(cmds[1])
+			default:
+				fmt.Println("INVALID SYNTAX")
+			}
 		}
 		fmt.Print("> ")
 	}
