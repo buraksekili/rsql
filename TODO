@@ -1,0 +1,3 @@
+1) unknown flag check
+2) in cmd, if command is unknown, return error
+	e.g, > add => causes panic (cunku dogrudan cmds[1] yapiyorum ancak cmds length = 1. so index out of range yiyorum

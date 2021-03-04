@@ -56,6 +56,7 @@ func (c *DbClient) OpenConnection() error {
 					"\tdisplay <TABLE>\t: displays the data of the <TABLE>\n" +
 					"\ttables\t\t: displays available tables under the <DB> specified by user\n" +
 					"\tq, exit <TABLE>\t: exits the program")
+
 			case "q":
 				return nil
 			case "exit":
@@ -81,6 +82,10 @@ func (c *DbClient) OpenConnection() error {
 				c.addData(cmds[1])
 			case "display":
 				c.displayTable(cmds[1])
+			case "source":
+				if err := c.source(cmds[1]); err != nil {
+					fmt.Println("error is ", err)
+				}
 			default:
 				fmt.Println("INVALID SYNTAX")
 			}
