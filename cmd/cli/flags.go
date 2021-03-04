@@ -25,8 +25,9 @@ func parseFlag() Operation {
 	flags := os.Args[1:]
 
 	if len(flags) == 0 {
-		return InvalidOp{Error: "Empty operation"}
+		return nil
 	}
+
 	if len(flags) > 2 {
 		return InvalidOp{Error: "Too many flags entered."}
 	}
