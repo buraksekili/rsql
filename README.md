@@ -3,6 +3,10 @@
 Easy way to walk through MySQL. 
 rsql allows a quick check for MySQL tables, and it facilitates insertion operation for test purposes.
 
+## Motivation
+
+I am generally using MySQL through Docker. In order to check the result of my queries, I need to open a connection to MySQL container back and forth. rsql facilitates working on MySQL for the basic commands. It allows users to see available tables, the content of the tables, adding data to the table, etc.
+
 ## Usage
 
 ### Available Flags
