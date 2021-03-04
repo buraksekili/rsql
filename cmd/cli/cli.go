@@ -110,12 +110,8 @@ func getConnInfo(dbClient *client.DbClient, connInfo *data.ConnInfo) {
 			}
 
 			pw := string(password)
-			if pw = strings.Trim(pw, "\n"); pw != "" {
-				dbClient.ConnInfo.Password = pw
-				fmt.Println()
-				break
-			}
-			fmt.Print("\n\tInvalid password\nPassword: ")
+			dbClient.ConnInfo.Password = pw
+			break
 		}
 	}
 	if err := dbClient.OpenConnection(); err != nil {
