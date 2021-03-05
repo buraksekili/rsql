@@ -46,7 +46,6 @@ func (c *DbClient) displayTable(table string) {
 	tWriter.SetHeader(cols)
 
 	for _, row := range res {
-		// tWriter.Append([]string{f.Field, f.Type, f.Null, f.Key, f.Default, f.Extra})
 		tWriter.Append(row)
 	}
 	tWriter.Render()

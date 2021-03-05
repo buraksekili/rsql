@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+// addData adds data to given 'table'
+// It fetches table information and takes each fields of table from Stdin.
 func (c *DbClient) addData(table string) {
 	fields := c.tableInfo(table)
 	if len(fields) == 0 {
@@ -19,7 +21,6 @@ func (c *DbClient) addData(table string) {
 
 	scanner := bufio.NewScanner(os.Stdin)
 	for _, f := range fields {
-		// if type is date, add default date
 		if f.Extra != "auto_increment" {
 			fmt.Printf("%s (%s): ", f.Field, f.Type)
 			if strings.ToLower(f.Type) == "date" {
@@ -55,8 +56,6 @@ func (c *DbClient) addData(table string) {
 		q += fmt.Sprintf("'%s',", req[k])
 	}
 	q = q[:len(q)-1] + ")"
-
-	fmt.Println("query is q ", q)
 
 	_, err := c.db.Exec(q)
 	if err != nil {

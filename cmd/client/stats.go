@@ -13,7 +13,7 @@ func (c *DbClient) displayDBStats() {
 
 	// Format in tab-separated columns with a tab stop of 8.
 	w.Init(os.Stdout, 0, 8, 0, '\t', 0)
-	fmt.Fprintln(w, "===== STATS =====")
+	fmt.Fprintln(w, "\n===== STATS =====")
 	fmt.Fprintln(w, "Max Open Connections:\t", stats.MaxOpenConnections)
 	fmt.Fprintln(w, "Open Connection:\t", stats.OpenConnections)
 	fmt.Fprintln(w, "Idle:\t", stats.Idle)

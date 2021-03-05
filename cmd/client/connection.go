@@ -31,6 +31,7 @@ func (c *DbClient) OpenConnection() error {
 	scanner := bufio.NewScanner(os.Stdin)
 
 	c.displayDBStats()
+	printHelp()
 	fmt.Print("> ")
 
 	for scanner.Scan() {
@@ -38,7 +39,7 @@ func (c *DbClient) OpenConnection() error {
 			c.Log.Error("cannot scan input line: %v", scanner.Err())
 		}
 
-		line := strings.ToLower(strings.Trim(scanner.Text(), " "))
+		line := strings.Trim(scanner.Text(), " ")
 		cmds := strings.Split(line, " ")
 
 		if len(cmds) > 2 {
@@ -50,13 +51,7 @@ func (c *DbClient) OpenConnection() error {
 			case "stats":
 				c.displayDBStats()
 			case "help":
-				fmt.Println("COMMANDS\n" +
-					"\tadd <TABLE>\t: adds data to <TABLE>\n" +
-					"\tinfo <TABLE>\t: displays the column informations of the <TABLE>\n" +
-					"\tdisplay <TABLE>\t: displays the data of the <TABLE>\n" +
-					"\ttables\t\t: displays available tables under the <DB> specified by user\n" +
-					"\tq, exit <TABLE>\t: exits the program")
-
+				printHelp()
 			case "q":
 				return nil
 			case "exit":
@@ -93,4 +88,13 @@ func (c *DbClient) OpenConnection() error {
 		fmt.Print("> ")
 	}
 	return nil
+}
+
+func printHelp() {
+	fmt.Println("COMMANDS\n" +
+		"\tadd <TABLE>\t: adds data to <TABLE>\n" +
+		"\tinfo <TABLE>\t: displays the column informations of the <TABLE>\n" +
+		"\tdisplay <TABLE>\t: displays the data of the <TABLE>\n" +
+		"\ttables\t\t: displays available tables under the <DB> specified by user\n" +
+		"\tq, exit <TABLE>\t: exits the program")
 }
