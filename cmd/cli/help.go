@@ -1,11 +1,11 @@
-package main
+package cli
 
 import (
 	"fmt"
 	"io"
 )
 
-func printHelp(w io.Writer) {
+func PrintHelp(w io.Writer) {
 	fmt.Fprintf(w, "USAGE\n"+
 		"\trsql -h, --help				: displays usage message and exits\n"+
 		"\trsql -f <FNAME>, --envfile <FNAME>	: reads environment file to establish MySQL connection.\n"+

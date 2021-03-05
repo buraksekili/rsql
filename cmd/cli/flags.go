@@ -1,7 +1,6 @@
-package main
+package cli
 
 import (
-	"os"
 	"strings"
 )
 
@@ -17,17 +16,20 @@ type InvalidOp struct {
 	Error string
 }
 
+type ConnInfoInput struct{}
+
 type UnknownOp struct {
 	Error string
 }
 
-func parseFlag() Operation {
-	flags := os.Args[1:]
+func ParseFlag(flags []string) Operation {
 
-	if len(flags) == 0 {
-		return nil
+	// if no flags entered, program asks the connection info from terminal
+	if len(flags) == 0 || flags == nil {
+		return ConnInfoInput{}
 	}
 
+	// the program does not expect more than 2 arguments.
 	if len(flags) > 2 {
 		return InvalidOp{Error: "Too many flags entered."}
 	}
@@ -48,14 +50,22 @@ func parseFlag() Operation {
 		fname := flags[1]
 		return EnvFileOp{Filename: fname}
 	}
+
 	if strings.HasPrefix(op, "-f") && strings.Contains(op, "=") {
 		i := strings.Index(op, "=")
 		fname := op[i+1:]
+		if len(fname) == 0 {
+			return InvalidOp{Error: "you need to specify file name."}
+		}
 		return EnvFileOp{fname}
 	}
+
 	if strings.HasPrefix(op, "--envfile") && strings.Contains(op, "=") {
 		i := strings.Index(op, "=")
 		fname := op[i+1:]
+		if len(fname) == 0 {
+			return InvalidOp{Error: "you need to specify file name."}
+		}
 		return EnvFileOp{fname}
 	}
 

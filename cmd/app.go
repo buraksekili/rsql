@@ -8,6 +8,8 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/buraksekili/rsql/cmd/cli"
+
 	"github.com/buraksekili/rsql/data"
 
 	"github.com/buraksekili/rsql/cmd/client"
@@ -18,37 +20,38 @@ import (
 
 func main() {
 
-	c := &data.ConnInfo{}
-	e := false
-	switch v := parseFlag().(type) {
-	case HelpOp:
-		printHelp(os.Stdout)
-		return
-	case EnvFileOp:
-		connInfo, err := readEnvFile(v.Filename)
-		if err != nil {
-			log.Fatal("cannot read env file: %v", err)
-		}
-		e = true
-		c = connInfo
-	case UnknownOp:
-		log.Fatal("Unknown operation: ", v.Error)
-	case InvalidOp:
-		log.Fatal("Invalid operation: ", v.Error)
-	}
-
 	logger := log.New(os.Stdout, "rsql ", log.LstdFlags|log.Lshortfile)
 	l := selog.NewLogger(logger)
 
 	dbClient := client.NewDbClient(l)
 
-	if e {
+	c := &data.ConnInfo{}
+	switch v := cli.ParseFlag(os.Args[1:]).(type) {
+	case cli.HelpOp:
+		cli.PrintHelp(os.Stdout)
+		return
+	case cli.EnvFileOp:
+		connInfo, err := cli.ReadEnvFile(v.Filename)
+		if err != nil {
+			dbClient.Log.Fatal("cannot read env file: %v", err)
+		}
+		c = connInfo
 		fmt.Println("FILE LOADED")
+		getConnInfo(dbClient, c)
+	case cli.UnknownOp:
+		dbClient.Log.Fatal("Unknown operation: ", v.Error)
+	case cli.InvalidOp:
+		dbClient.Log.Fatal("Invalid operation: ", v.Error)
+	case cli.ConnInfoInput:
+		getConnInfo(dbClient, c)
+	default:
+		dbClient.Log.Fatal("invalid operation: %T", v)
 	}
-
-	getConnInfo(dbClient, c)
 }
 
+// getConnInfo takes required inputs to establish MySQL connection from terminal.
+// Then, it opens connection to the DB. In case of any error, it prints fatal message
+// and exits the program.
 func getConnInfo(dbClient *client.DbClient, connInfo *data.ConnInfo) {
 	reader := bufio.NewReader(os.Stdin)
 

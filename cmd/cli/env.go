@@ -1,4 +1,4 @@
-package main
+package cli
 
 import (
 	"bufio"
@@ -10,7 +10,7 @@ import (
 	"github.com/buraksekili/rsql/data"
 )
 
-func readEnvFile(filename string) (*data.ConnInfo, error) {
+func ReadEnvFile(filename string) (*data.ConnInfo, error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil, fmt.Errorf("cannot get working directory: %v", err)
