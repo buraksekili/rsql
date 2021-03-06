@@ -15,13 +15,14 @@ import (
 //
 // If there is no error after pinging the DB, this function takes
 // input(cmds) to execute on the DB specified by the user.
-// To see available cmds, type; > help
+// To see available cmds;
+// 		> help
 func (c *DbClient) OpenConnection() error {
 	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", c.ConnInfo.User, c.ConnInfo.Password, c.ConnInfo.HostAddr, c.ConnInfo.Port, c.ConnInfo.DbName))
-
 	if err != nil {
 		return err
 	}
+
 	c.db = db
 	defer db.Close()
 	if err := db.Ping(); err != nil {

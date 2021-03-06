@@ -3,8 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 	"log"
 	"os"
+	"runtime"
 	"strings"
 	"syscall"
 
@@ -15,7 +18,6 @@ import (
 	"github.com/buraksekili/rsql/cmd/client"
 	"github.com/buraksekili/selog"
 	_ "github.com/go-sql-driver/mysql"
-	"golang.org/x/crypto/ssh/terminal"
 )
 
 func main() {
@@ -62,52 +64,58 @@ func getConnInfo(dbClient *client.DbClient, connInfo *data.ConnInfo) {
 		if err != nil {
 			dbClient.Log.Fatal("cannot read host address: %v", err)
 		}
-		if hostAddr = strings.Trim(hostAddr, "\n"); hostAddr == "" {
+		if hostAddr = strings.Trim(hostAddr, "\r\n"); hostAddr == "" {
 			hostAddr = "127.0.0.1"
 		}
 		dbClient.ConnInfo.HostAddr = hostAddr
 	}
 
-	if strings.Trim(dbClient.ConnInfo.Port, "") == "" {
+	if strings.Trim(dbClient.ConnInfo.Port, " ") == "" {
 		fmt.Print("Port: (8080) ")
 		port, err := reader.ReadString('\n')
 		if err != nil {
 			dbClient.Log.Fatal("cannot read host address: %v", err)
 		}
-		if port = strings.Trim(port, "\n"); port == "" {
+		if port = strings.Trim(port, "\r\n"); port == "" {
 			port = "8080"
 		}
 		dbClient.ConnInfo.Port = port
 	}
 
-	if strings.Trim(dbClient.ConnInfo.DbName, "") == "" {
+	if strings.Trim(dbClient.ConnInfo.DbName, " ") == "" {
 		fmt.Print("Database: (mysql) ")
 		dbName, err := reader.ReadString('\n')
 		if err != nil {
 			dbClient.Log.Fatal("cannot read db name: %v", err)
 		}
-		if dbName = strings.Trim(dbName, "\n"); dbName == "" {
+		if dbName = strings.Trim(dbName, "\r\n"); dbName == "" {
 			dbName = "mysql"
 		}
 		dbClient.ConnInfo.DbName = dbName
 	}
 
-	if strings.Trim(dbClient.ConnInfo.User, "") == "" {
-		fmt.Print("User: (root)")
+	if strings.Trim(dbClient.ConnInfo.User, " ") == "" {
+		fmt.Print("User: (root) ")
 		user, err := reader.ReadString('\n')
 		if err != nil {
 			dbClient.Log.Fatal("cannot read user: %v", err)
 		}
-		if user = strings.Trim(user, "\n"); user == "" {
+		if user = strings.Trim(user, "\r\n"); user == "" {
 			user = "root"
 		}
 		dbClient.ConnInfo.User = user
 	}
 
-	if strings.Trim(dbClient.ConnInfo.Password, "") == "" {
+	if strings.Trim(dbClient.ConnInfo.Password, " ") == "" {
 		fmt.Print("Password: ")
 		for {
-			password, err := terminal.ReadPassword(int(syscall.Stdin))
+			var err error
+			var password []byte
+			if runtime.GOOS == "windows" {
+				password, err = term.ReadPassword(int(syscall.Stdin))
+			} else {
+				password, err = terminal.ReadPassword(int(syscall.Stdin))
+			}
 			if err != nil {
 				dbClient.Log.Fatal("cannot read password: %v", err)
 			}
@@ -117,6 +125,7 @@ func getConnInfo(dbClient *client.DbClient, connInfo *data.ConnInfo) {
 			break
 		}
 	}
+
 	if err := dbClient.OpenConnection(); err != nil {
 		dbClient.Log.Fatal("cannot open connection: %v", err)
 	}
