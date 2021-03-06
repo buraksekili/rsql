@@ -6,6 +6,7 @@ import (
 	"github.com/buraksekili/rsql/data"
 )
 
+// tableInfo returns fields of given table.
 func (c *DbClient) tableInfo(table string) []data.TableField {
 	if c.db == nil {
 		c.Log.Error("cannot fetch table: c.db == nil\n")

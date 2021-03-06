@@ -8,6 +8,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 )
 
+// displayTable prints the content of the given table
 func (c *DbClient) displayTable(table string) {
 	q := fmt.Sprintf("select * from %s;", table)
 	rows, err := c.db.Query(q)

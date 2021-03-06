@@ -33,7 +33,7 @@ func (c *DbClient) OpenConnection() error {
 
 	c.displayDBStats()
 	printHelp()
-	fmt.Print("> ")
+	fmt.Print("rsql> ")
 
 	for scanner.Scan() {
 		if scanner.Err() != nil {
@@ -86,7 +86,7 @@ func (c *DbClient) OpenConnection() error {
 				fmt.Println("INVALID SYNTAX")
 			}
 		}
-		fmt.Print("> ")
+		fmt.Print("rsql> ")
 	}
 	return nil
 }
