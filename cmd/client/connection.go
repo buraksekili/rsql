@@ -97,5 +97,6 @@ func printHelp() {
 		"\tinfo <TABLE>\t: displays the column informations of the <TABLE>\n" +
 		"\tdisplay <TABLE>\t: displays the data of the <TABLE>\n" +
 		"\ttables\t\t: displays available tables under the <DB> specified by user\n" +
-		"\tq, exit <TABLE>\t: exits the program")
+		"\thelp\t\t: displays this message\n" +
+		"\tq, exit \t: exits the program")
 }
