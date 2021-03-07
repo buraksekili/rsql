@@ -19,7 +19,7 @@ jobs:
     - name: Build
       env:
         GOPROXY: "https://proxy.golang.org"
-      run: go build .
+      run: go build cmd/app.go  
       
     - name: Test
       run: go test ./...
