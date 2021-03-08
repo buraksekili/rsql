@@ -30,7 +30,7 @@ q, exit         : exits the program
 ```
 
 ### Examples
-![rsql](https://user-images.githubusercontent.com/32663655/110255037-e3e81780-7fa2-11eb-92b7-60b94a6d42f8.gif)
+![rsql](https://user-images.githubusercontent.com/32663655/110378071-376f6980-8066-11eb-8853-7a53d7014c68.gif)
 
 
 
