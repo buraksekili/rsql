@@ -3,14 +3,14 @@ package client
 import (
 	"database/sql"
 	"fmt"
-	"os"
+	"io"
 
 	"github.com/olekukonko/tablewriter"
 )
 
 // showTables displays the available tables of the db
 // specified by user.
-func (c *DbClient) showTables() []string {
+func (c *DbClient) showTables(w io.Writer) []string {
 	rows, err := c.db.Query("show tables")
 	if err != nil {
 		c.Log.Error("cannot fetch tables: %v", err)
@@ -42,7 +42,7 @@ func (c *DbClient) showTables() []string {
 		}
 	}
 
-	tWriter := tablewriter.NewWriter(os.Stdout)
+	tWriter := tablewriter.NewWriter(w)
 	for _, row := range tables {
 		tWriter.Append([]string{row})
 	}
