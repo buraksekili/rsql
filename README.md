@@ -61,7 +61,23 @@ $ git clone https://github.com/buraksekili/rsql.git
     `$ bash install.sh`
 - or;
 
-    `$ cd ./cmd/cli && go build -o $GOPATH/bin/rsql`
+    `$ cd ./cmd && go build -o $GOPATH/bin/rsql`
+
+## Contribute
+
+### Issues and Enhancement
+
+- Feel free to post your issues and enhancement ideas on the `Issues` section.
+
+### Contributing
+
+1. *Fork* the repository
+2. *Clone* the repository to your local environment.
+3. *Create* your brach, e.g, `git branch -b fix-test`
+4. *Commit* your changes `git commit -m "update test"` 
+5. *Push* your branch `git push origin fix-test` 
+6. *Create* a new  Pull Request.
+
 
 ### License
 [License](https://github.com/buraksekili/rsql/blob/master/LICENSE)
