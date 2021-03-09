@@ -3,18 +3,19 @@ package client
 import (
 	"database/sql"
 	"fmt"
-	"os"
+	"io"
 
 	"github.com/olekukonko/tablewriter"
 )
 
-// displayTable prints the content of the given table
-func (c *DbClient) displayTable(table string) {
+// displayTable writes the content of the given table into io.Writer.
+// Returns content of the table or error.
+func (c *DbClient) displayTable(table string, w io.Writer) ([][]string, error) {
 	q := fmt.Sprintf("select * from %s;", table)
 	rows, err := c.db.Query(q)
 	if err != nil {
 		c.Log.Error("cannot display table %s: %v\n", table, err)
-		return
+		return nil, fmt.Errorf("cannot display table %s: %v\n", table, err)
 	}
 	defer rows.Close()
 
@@ -43,11 +44,13 @@ func (c *DbClient) displayTable(table string) {
 		res = append(res, row)
 	}
 
-	tWriter := tablewriter.NewWriter(os.Stdout)
+	tWriter := tablewriter.NewWriter(w)
 	tWriter.SetHeader(cols)
 
 	for _, row := range res {
 		tWriter.Append(row)
 	}
 	tWriter.Render()
+
+	return res, nil
 }

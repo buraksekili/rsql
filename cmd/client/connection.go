@@ -48,7 +48,7 @@ func (c *DbClient) OpenConnection() error {
 		} else if len(cmds) == 1 {
 			switch cmds[0] {
 			case "tables":
-				c.showTables()
+				c.showTables(os.Stdout)
 			case "stats":
 				c.displayDBStats()
 			case "help":
@@ -77,7 +77,7 @@ func (c *DbClient) OpenConnection() error {
 			case "add":
 				c.addData(cmds[1])
 			case "display":
-				c.displayTable(cmds[1])
+				c.displayTable(cmds[1], os.Stdout)
 			case "source":
 				if err := c.source(cmds[1]); err != nil {
 					fmt.Println("error is ", err)

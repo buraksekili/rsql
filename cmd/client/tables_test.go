@@ -8,7 +8,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 )
 
-func TestDbClient_TableInfo(t *testing.T) {
+func TestShowTables(t *testing.T) {
 	db, mock := NewMockDB()
 	defer db.Close()
 
@@ -17,15 +17,15 @@ func TestDbClient_TableInfo(t *testing.T) {
 		expected []string
 	}{
 		{
-			name:     "empty tables",
+			name:     "show no table",
 			expected: []string{},
 		},
 		{
-			name:     "single element table",
+			name:     "show single element table",
 			expected: []string{"james"},
 		},
 		{
-			name:     "multiple element table",
+			name:     "show multiple element table",
 			expected: []string{"king", "james"},
 		},
 	}
@@ -35,13 +35,15 @@ func TestDbClient_TableInfo(t *testing.T) {
 	clientDB := getMockClientDB(db)
 
 	for _, tc := range tests {
+		var buff bytes.Buffer
+
 		row := sqlmock.NewRows([]string{"name"})
 		for _, table := range tc.expected {
 			row.AddRow(table)
 		}
 		mock.ExpectQuery(q).WillReturnRows(row)
 
-		tables := clientDB.showTables(&bytes.Buffer{})
+		tables := clientDB.showTables(&buff)
 		if !reflect.DeepEqual(tc.expected, tables) {
 			t.Fatalf("%s, got=%v expected=%v", tc.name, tables, tc.expected)
 		}

@@ -1,51 +1,89 @@
 package client
 
 import (
+	"bytes"
 	"database/sql"
-	"fmt"
-	"strings"
+	"log"
+	"os"
+	"reflect"
+	"regexp"
 	"testing"
 
+	"github.com/buraksekili/selog"
+
+	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/buraksekili/rsql/data"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
 func TestDbClient_ShowTables(t *testing.T) {
-	c := NewDBClient()
-	if err := MockDB(c); err != nil {
-		t.Fatal("cannot mock db: ", err.Error())
+	db, mock := NewMockDB()
+	defer db.Close()
+
+	tests := []struct {
+		name     string
+		expected [][]string
+	}{
+		{
+			name:     "display empty table",
+			expected: [][]string{},
+		},
+		{
+			name:     "display no element table",
+			expected: [][]string{{""}},
+		},
+		{
+			name:     "display single empty element table",
+			expected: [][]string{{" "}},
+		},
+		{
+			name:     "display single element table",
+			expected: [][]string{{"Burak"}},
+		},
+		{
+			name:     "display multiple element table",
+			expected: [][]string{{"Burak"}, {"rsql"}},
+		},
 	}
 
-	tables := c.showTables()
-	for _, row := range tables {
-		if strings.Trim(row, " ") != "db_test" {
-			t.Fatalf("got %s; want %s", row, "db_test")
+	// q is query which will be tested.
+	q := `select * from test;`
+	clientDB := getMockClientDB(db)
+
+	for _, tc := range tests {
+		var buff bytes.Buffer
+
+		rows := sqlmock.NewRows([]string{"name"})
+		for _, r := range tc.expected {
+			for _, rr := range r {
+				rows.AddRow(rr)
+			}
+		}
+		mock.ExpectQuery(regexp.QuoteMeta(q)).WillReturnRows(rows)
+
+		content, err := clientDB.displayTable("test", &buff)
+		if err != nil {
+			t.Fatalf("error while displaying table: %s", err)
+		}
+		if !reflect.DeepEqual(tc.expected, content) {
+			t.Fatalf("%s, got=%v expected=%v", tc.name, content, tc.expected)
 		}
 	}
+
 }
 
-// NewDBClient returns DbClient by using temp logger
-func NewDBClient() *DbClient {
-	return NewDbClient(nil)
-}
-
-// MockDB mocks DB with temporary database
-func MockDB(c *DbClient) error {
-	// you can create new MySQL container to test it with temporary credentials.
-	conn := data.ConnInfo{
-		User:     "test",
-		Password: "yourtestpassword",
-		HostAddr: "127.0.0.1",
-		Port:     "8080",
-		DbName:   "posts_test",
-	}
-	c.ConnInfo = &conn
-
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", c.ConnInfo.User, c.ConnInfo.Password, c.ConnInfo.HostAddr, c.ConnInfo.Port, c.ConnInfo.DbName))
+func NewMockDB() (*sql.DB, sqlmock.Sqlmock) {
+	db, mock, err := sqlmock.New()
 	if err != nil {
-		return fmt.Errorf("cannot establish mysql connection: %s", err.Error())
+		log.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
 	}
-	c.db = db
-	return nil
+
+	return db, mock
 }
 
+func getMockClientDB(db *sql.DB) *DbClient {
+	logger := log.New(os.Stdout, "rsql ", log.LstdFlags|log.Lshortfile)
+	l := selog.NewLogger(logger)
+	return &DbClient{&data.ConnInfo{}, l, db}
+}
