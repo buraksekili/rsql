@@ -1,3 +1,5 @@
+github.com/DATA-DOG/go-sqlmock v1.5.0 h1:Shsta01QNfFxHCfpW6YH2STWB0MudeXXEWMr20OEh60=
+github.com/DATA-DOG/go-sqlmock v1.5.0/go.mod h1:f/Ixk793poVmq4qj/V1dPUg2JEAKC73Q5eFN3EC/SaM=
 github.com/buraksekili/selog v0.0.0-20210222194727-4ef562acd08b h1:xa3919IlwwK46PFguCCgUO8CBfwUeqwJC4Uthg8Nt4g=
 github.com/buraksekili/selog v0.0.0-20210222194727-4ef562acd08b/go.mod h1:5FroVoEtlwc9KZOouswY1B0V7Bx/+QepYhX0m/Sh7hw=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
