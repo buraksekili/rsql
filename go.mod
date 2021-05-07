@@ -6,6 +6,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/buraksekili/selog v0.0.0-20210222194727-4ef562acd08b
 	github.com/go-sql-driver/mysql v1.5.0
+	github.com/google/go-cmp v0.5.5
 	github.com/olekukonko/tablewriter v0.0.5
 	golang.org/x/crypto v0.0.0-20210220033148-5ea612d1eb83
 	golang.org/x/sys v0.0.0-20210119212857-b64e53b001e4 // indirect

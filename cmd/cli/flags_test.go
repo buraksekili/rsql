@@ -22,6 +22,11 @@ func TestParseFlag(t *testing.T) {
 			expected: ConnInfoInput{},
 		},
 		{
+			name:     "unknown flag (no - before flag); f",
+			args:     []string{"f"},
+			expected: UnknownOp{Error: "f"},
+		},
+		{
 			name:     "env file flag; -f=file",
 			args:     []string{"-f=lol.txt"},
 			expected: EnvFileOp{Filename: "lol.txt"},
@@ -82,7 +87,7 @@ func TestParseFlag(t *testing.T) {
 			expected: UnknownOp{Error: "unsupported flag"},
 		},
 	}
-
+	
 	for _, test := range tests {
 		op := ParseFlag(test.args)
 		if !reflect.DeepEqual(test.expected, op) {
