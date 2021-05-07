@@ -31,7 +31,7 @@ func (c *DbClient) OpenConnection() error {
 
 	scanner := bufio.NewScanner(os.Stdin)
 
-	c.displayDBStats()
+	c.displayDBStats(os.Stdout)
 	printHelp()
 	fmt.Print("rsql> ")
 
@@ -50,7 +50,7 @@ func (c *DbClient) OpenConnection() error {
 			case "tables":
 				c.showTables(os.Stdout)
 			case "stats":
-				c.displayDBStats()
+				c.displayDBStats(os.Stdout)
 			case "help":
 				printHelp()
 			case "q":
