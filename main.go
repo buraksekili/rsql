@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/buraksekili/rsql/commands"
 	"golang.org/x/crypto/ssh/terminal"
 	"golang.org/x/term"
 	"log"
@@ -11,11 +12,10 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/buraksekili/rsql/cmd/cli"
+	"github.com/buraksekili/rsql/cli"
 
 	"github.com/buraksekili/rsql/data"
 
-	"github.com/buraksekili/rsql/cmd/client"
 	"github.com/buraksekili/selog"
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -25,7 +25,7 @@ func main() {
 	logger := log.New(os.Stdout, "rsql ", log.LstdFlags|log.Lshortfile)
 	l := selog.NewLogger(logger)
 
-	dbClient := client.NewDbClient(l)
+	dbClient := commands.NewDbClient(l)
 
 	c := &data.ConnInfo{}
 	switch v := cli.ParseFlag(os.Args[1:]).(type) {
@@ -54,7 +54,7 @@ func main() {
 // getConnInfo takes required inputs to establish MySQL connection from terminal.
 // Then, it opens connection to the DB. In case of any error, it prints fatal message
 // and exits the program.
-func getConnInfo(dbClient *client.DbClient, connInfo *data.ConnInfo) {
+func getConnInfo(dbClient *commands.DbClient, connInfo *data.ConnInfo) {
 	reader := bufio.NewReader(os.Stdin)
 
 	dbClient.ConnInfo = connInfo
