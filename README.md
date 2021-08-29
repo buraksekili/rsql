@@ -83,6 +83,17 @@ $ make build
 $ make test
 ```
 
+### Try rsql
+
+```
+$ make run
+```
+
+`make run` creates a new `mysql` database called `runsql` and creates a new table called `posts`. 
+`docker-compose` is required. 
+
+You can test `rsql` with this testing environment. You can configure this environment via [.env](https://github.com/buraksekili/rsql/blob/master/contrib/.env). Check [./contrib](https://github.com/buraksekili/rsql/tree/master/contrib) folder for further details.
+
 ## Contribute
 
 ### Issues and Enhancement

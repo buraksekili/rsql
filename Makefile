@@ -7,3 +7,6 @@ build:
 
 test:
 	go test ./... -v -cover
+
+run:
+	docker-compose -f ./contrib/docker-compose.yml up --build
