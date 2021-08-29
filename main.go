@@ -3,9 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/buraksekili/rsql/commands"
-	"golang.org/x/crypto/ssh/terminal"
-	"golang.org/x/term"
 	"log"
 	"os"
 	"runtime"
@@ -13,41 +10,45 @@ import (
 	"syscall"
 
 	"github.com/buraksekili/rsql/cli"
-
+	"github.com/buraksekili/rsql/commands"
 	"github.com/buraksekili/rsql/data"
-
 	"github.com/buraksekili/selog"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
+	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	connInfo := &data.ConnInfo{
+		User:     os.Getenv("R_MYSQL_USER"),
+		Password: os.Getenv("R_MYSQL_PASSWORD"),
+		HostAddr: os.Getenv("R_MYSQL_ADDR"),
+		Port:     os.Getenv("R_MYSQL_PORT"),
+		DbName:   os.Getenv("R_MYSQL_DB"),
+	}
 
 	logger := log.New(os.Stdout, "rsql ", log.LstdFlags|log.Lshortfile)
 	l := selog.NewLogger(logger)
-
 	dbClient := commands.NewDbClient(l)
 
-	c := &data.ConnInfo{}
 	switch v := cli.ParseFlag(os.Args[1:]).(type) {
 	case cli.HelpOp:
 		cli.PrintHelp(os.Stdout)
 		return
-	case cli.EnvFileOp:
-		connInfo, err := cli.ReadEnvFile(v.Filename)
-		if err != nil {
-			dbClient.Log.Fatal("cannot read env file: %v", err)
-		}
-		c = connInfo
-		fmt.Println("FILE LOADED")
-		getConnInfo(dbClient, c)
-	case cli.UnknownOp:
-		dbClient.Log.Fatal("Unknown operation: ", v.Error)
-	case cli.InvalidOp:
-		dbClient.Log.Fatal("Invalid operation: ", v.Error)
 	case cli.ConnInfoInput:
-		getConnInfo(dbClient, c)
+		getConnInfo(dbClient, connInfo)
+	case cli.EnvFileOp:
+		getConnInfo(dbClient, connInfo)
+	case cli.UnknownOp:
+		dbClient.Log.Fatal(fmt.Sprintf("Unknown operation: : %s\n", v.Error))
+	case cli.InvalidOp:
+		dbClient.Log.Fatal(fmt.Sprintf("Invalid operation: %s\n", v.Error))
 	default:
-		dbClient.Log.Fatal("invalid operation: %T", v)
+		dbClient.Log.Fatal(fmt.Sprintf("invalid operation: %T", v))
 	}
 }
 
@@ -127,6 +128,6 @@ func getConnInfo(dbClient *commands.DbClient, connInfo *data.ConnInfo) {
 	}
 
 	if err := dbClient.OpenConnection(); err != nil {
-		dbClient.Log.Fatal("cannot open connection: %v", err)
+		dbClient.Log.Fatal(fmt.Sprintf("cannot open connection: %v\n", err))
 	}
 }

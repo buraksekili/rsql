@@ -10,58 +10,78 @@ I am generally using MySQL through Docker. In order to check the result of my qu
 rsql facilitates working on MySQL for the basic commands. It allows users to see available tables, the content of the tables, adding data to the table, etc.
 
 ## Usage
-
-### Available Flags
-
 ```
-rsql -h, --help                         : displays usage message and exits
-rsql -f <FNAME>, --envfile <FNAME>      : reads environment file to establish MySQL connection.
-```
-
-### Commands
-
-```
-add <TABLE>     : adds data to <TABLE>
-info <TABLE>    : displays the column informations of the <TABLE>
+add     <TABLE> : adds data to <TABLE>
+info    <TABLE> : displays the column informations of the <TABLE>
 display <TABLE> : displays the data of the <TABLE>
 tables          : displays available tables under the <DB> specified by user
 help            : displays available commands after connection establishment.
 q, exit         : exits the program
 ```
 
-### Examples
 ![rsql](https://user-images.githubusercontent.com/32663655/110378071-376f6980-8066-11eb-8853-7a53d7014c68.gif)
 
+```bash
+burak@burak-ZenBook:~$ rsql
 
+===== STATS =====
+Max Open Connections:	 0
+Open Connection:	 1
+Idle:			 1
+In Use:			 0
+COMMANDS
+	add <TABLE>	: adds data to <TABLE>
+	info <TABLE>	: displays the column informations of the <TABLE>
+	display <TABLE>	: displays the data of the <TABLE>
+	tables		: displays available tables under the <DB> specified by user
+	help		: displays this message
+	q, exit 	: exits the program
+rsql> tables
++-------+
+| posts |
++-------+
+rsql> info posts
 
-### [Environment File Usage](https://github.com/buraksekili/rsql/blob/master/env.list)
-
-You can define the environment file while connecting the database. The program reads the environment file (case sensitive). Partial environment fields are OK. 
-
-Following fields can be used. Missing fields are asked while executing the app.
-
+FETCHING INFORMATION FOR TABLE: posts
++------------+--------------+------+-----+---------+----------------+
+|   FIELD    |     TYPE     | NULL | KEY | DEFAULT |     EXTRA      |
++------------+--------------+------+-----+---------+----------------+
+| post_id    | int          | NO   |     |         | auto_increment |
+| post_title | varchar(100) | NO   |     |         |                |
+| post_body  | text         | NO   |     |         |                |
++------------+--------------+------+-----+---------+----------------+
+rsql>  
 ```
-USER=root
-PASSWORD=yourpassword
-ADDR=127.0.0.1
-PORT=8080
-DB=your_db_name
+
+### [Environment File Usage](https://github.com/buraksekili/rsql/blob/master/.env)
+
+You can define the environment file while connecting the database. 
+`rsql` reads `.env` file by default.
+
+Following fields are required for MySQL connection. Missing fields will be asked while executing the app.
+```bash
+R_MYSQL_USER=root
+R_MYSQL_ADDR=127.0.0.1
+R_MSQL_PORT=8080
+R_MYSQL_DB=posts
 ```
 
-See [env.list](https://github.com/buraksekili/rsql/blob/master/env.list) for example usage
+You can use any `.env` file by passing `-f` or `--envfile` flag.
+```bash
+$ rsql --envfile ~/your/.env
+```
 
 ## Installation
-
-```shell script
+```bash
 $ git clone https://github.com/buraksekili/rsql.git 
+$ cd rsql
+$ make build
 ```
 
-- If you have access to `bash`
-    
-    `$ bash install.sh`
-- or;
-
-    `$ cd ./cmd && go build -o $GOPATH/bin/rsql`
+### Run Tests
+```bash
+$ make test
+```
 
 ## Contribute
 
@@ -74,10 +94,11 @@ $ git clone https://github.com/buraksekili/rsql.git
 1. *Fork* the repository
 2. *Clone* the repository to your local environment.
 3. *Create* your brach, e.g, `git branch -b fix-test`
-4. *Commit* your changes `git commit -m "update test"` 
+4. *Commit* your changes `git commit -s -m "update test"` 
 5. *Push* your branch `git push origin fix-test` 
 6. *Create* a new  Pull Request.
 
+> *Do not forget to sign your commits, you can sign your commits with `git commit -s`.*
 
 ### License
 [License](https://github.com/buraksekili/rsql/blob/master/LICENSE)
