@@ -16,7 +16,7 @@ func (c *DbClient) displayDBStats(w io.Writer) {
 	tw.Init(w, 0, 8, 0, '\t', 0)
 	fmt.Fprintln(tw, "\n===== STATS =====")
 	fmt.Fprintln(tw, "Max Open Connections:\t", stats.MaxOpenConnections)
-	fmt.Fprintln(tw, "pen Connection:\t", stats.OpenConnections)
+	fmt.Fprintln(tw, "Open Connection:\t", stats.OpenConnections)
 	fmt.Fprintln(tw, "Idle:\t", stats.Idle)
 	fmt.Fprintln(tw, "In Use:\t", stats.InUse)
 	tw.Flush()

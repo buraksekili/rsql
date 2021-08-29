@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  mysqldb:
+    image: mysql
+    ports:
+      - ${TEST_R_MSQL_PORT}:3306
+    command: --init-file /data/application/init.sql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${TEST_R_MYSQL_PASSWORD}
+    volumes:
+      - ./init.sql:/data/application/init.sql
+    env_file:
+      - .env

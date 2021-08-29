@@ -20,7 +20,7 @@ func TestDisplayDBStats(t *testing.T) {
 
 	expOut := `===== STATS =====
 Max Open Connections:	 0
-pen Connection:		 1
+Open Connection:	 1
 Idle:			 1
 In Use:			 0`
 
