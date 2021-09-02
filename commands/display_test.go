@@ -9,15 +9,13 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/buraksekili/selog"
-
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/buraksekili/rsql/data"
-
+	"github.com/buraksekili/selog"
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func TestDbClient_ShowTables(t *testing.T) {
+func TestDisplayTable(t *testing.T) {
 	db, mock := NewMockDB()
 	defer db.Close()
 
